@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 ## debug: 1=>only print out command line, not run the code;  0=>run the code
-my $debug = 1;
+my $debug = 0;
 
 ##1=>remove the duplicates using MarkDuplicates from picard after bam file is sorted and indexed, which is slow
 my $remove_duplicates = 1;
@@ -84,6 +84,13 @@ if($debug==0){
 }
 print "Step 5: sorting bam done!\n";
 
+print "=============step 5-1: deleting unsorted bam file to save space...=================\n";
+print "rm $name.bam\n";
+if($debug==0){
+        `rm $name.bam\n`;
+}
+print "delete unsorted bam file done\n";
+
 ##index sorted bam file
 #samtools index alignments/sim_reads_aligned.sorted.bam
 print "===============Step 6: indexing sorted bam file ...===============\n";
@@ -96,9 +103,9 @@ print "Step 6: indexing sorted bam file done!\n";
 if($remove_duplicates==1){
 	print "============================remove duplicates=============================\n";
 	print "========================run picard  MarkDuplicates=========================\n";
-	print "java -jar picard.jar MarkDuplicates I=$name.sorted.bam O=$name.sorted.duprmed.bam M=$name.marked_dup_metrics.txt ASSUME_SORTED=true REMOVE_DUPLICATES=true";
+	print "java -jar ~/bin/picard.jar MarkDuplicates I=$name.sorted.bam O=$name.sorted.duprmed.bam M=$name.marked_dup_metrics.txt ASSUME_SORTED=true REMOVE_DUPLICATES=true\n";
 	if($debug==0){
-		
+		`java -jar ~/bin/picard.jar MarkDuplicates I=$name.sorted.bam O=$name.sorted.duprmed.bam M=$name.marked_dup_metrics.txt ASSUME_SORTED=true REMOVE_DUPLICATES=true`;		
        	}
 	print "MarkDuplicates run done\n";
 
@@ -108,7 +115,7 @@ if($remove_duplicates==1){
 	print "=========================index dup.removed bam file===========================\n";
 	print "samtools index $name.sorted.duprmed.bam\n";
 	if($debug==0){
-
+		`samtools index $name.sorted.duprmed.bam`;
 	}
 	print "indexing dup.removed bam file done!\n";
 
